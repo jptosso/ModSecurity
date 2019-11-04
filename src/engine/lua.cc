@@ -258,7 +258,7 @@ int Lua::getvar(lua_State *L) {
     z = const_cast<void *>(lua_topointer(L, -1));
     t = reinterpret_cast<Transaction *>(z);
 
-    std::string var = Variables::Variable::stringMatchResolve(t, varname);
+    std::string var = variables::Variable::stringMatchResolve(t, varname);
     var = applyTransformations(L, t, 2, var);
 
     if (var.size() == 0) {
@@ -286,7 +286,7 @@ int Lua::getvars(lua_State *L) {
     z = const_cast<void *>(lua_topointer(L, -1));
     t = reinterpret_cast<Transaction *>(z);
 
-    Variables::Variable::stringMatchResolveMulti(t, varname, &l);
+    variables::Variable::stringMatchResolveMulti(t, varname, &l);
 
     lua_newtable(L);
     for (auto i : l) {
@@ -294,11 +294,11 @@ int Lua::getvars(lua_State *L) {
         lua_newtable(L);
 
         lua_pushstring(L, "name");
-        lua_pushlstring(L, i->m_key.c_str(), i->m_key.size());
+        lua_pushlstring(L, i->getKeyWithCollection().c_str(), i->getKeyWithCollection().size());
         lua_settable(L, -3);
 
         lua_pushstring(L, "value");
-        lua_pushlstring(L, i->m_value.c_str(), i->m_value.size());
+        lua_pushlstring(L, i->getValue().c_str(), i->getValue().size());
         lua_settable(L, -3);
 
         lua_settable(L, -3);

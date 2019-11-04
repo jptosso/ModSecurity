@@ -38,7 +38,7 @@ void RunTimeString::appendText(std::string text) {
 
 
 void RunTimeString::appendVar(
-    std::unique_ptr<modsecurity::Variables::Variable> var) {
+    std::unique_ptr<modsecurity::variables::Variable> var) {
     std::unique_ptr<RunTimeElementHolder> r(new RunTimeElementHolder);
     r->m_var = std::move(var);
     m_elements.push_back(std::move(r));
@@ -60,7 +60,7 @@ std::string RunTimeString::evaluate(Transaction *t, Rule *r) {
             std::vector<const VariableValue *> l;
             z->m_var->evaluate(t, r, &l);
             if (l.size() > 0) {
-                s.append(l[0]->m_value);
+                s.append(l[0]->getValue());
             }
             for (auto &i : l) {
                 delete i;

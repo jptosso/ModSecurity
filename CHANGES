@@ -1,6 +1,39 @@
 v3.0.4 - YYYY-MMM-DD (to be released)
 -------------------------------------
 
+ - Fix: audit log part for response body for JSON format to be E
+   [Issue #2066 - @martinhsv, @zimmerle]
+ - Make sure m_rulesMessages is filled after successfull match
+   [Issue #2000, #2048 - @victorhora, @defanator]
+ - Fix @pm lookup for possible matches on offset zero.
+   [@zimmerle, @afoxdavidi, @martinhsv, @marshal09]
+ - Regex lookup on the key name instead of COLLECTION:key
+   [@rdiperri-yottaa, @danbiagini-work, @mmelo-yottaa, @zimmerle]
+ - Missing throw in Operator::instantiate
+   [Issue #2106 - @marduone]
+ - Making block action execution dependent of the SecEngine status
+   [Issue #2113, #2111 - @theMiddleBlue, @airween]
+ - Making block action execution dependent of the SecEngine status
+   [Issue #1960 - @theMiddleBlue, @zimmerle, @airween, @victorhora]
+ - Having body limits to respect the rule engine state
+   [@zimmerle]
+ - Fix SecRuleUpdateTargetById does not match regular expressions
+   [Issue #1872 - @zimmerle, @anush-cr, @victorhora, @j0k2r]  
+ - Adds missing check for runtime ctl:ruleRemoveByTag
+   [Issue #2102, #2099 - @airween]
+ - Adds a new operator verifySVNR that checks for Austrian social
+   security numbers.
+   [Issue #2063 - @Rufus125]
+ - Fix variables output in debug logs
+   [Issue #2057 - @jleproust]
+ - Correct typo validade in log output
+   [Issue #2059 - @nerrehmit]
+ - fix/minor: Error encoding hexa decimal.
+   [Issue #2068 - @tech-ozon-io]
+ - Limit more log variables to 200 characters.
+   [Issue #2073 - @jleproust]
+ - parser: fix parsed file names
+   [@zimmerle]
  - Allow empty anchored variable
    [Issue #2024 - @airween]
  - Fixed FILES_NAMES collection after the end of multipart parsing

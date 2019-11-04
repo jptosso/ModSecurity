@@ -88,6 +88,7 @@ VARIABLES = \
 	variables/highest_severity.cc \
 	variables/modsec_build.cc \
 	variables/remote_user.cc \
+	variables/rule.cc \
 	variables/time.cc \
 	variables/time_day.cc \
 	variables/time_epoch.cc \
@@ -225,6 +226,7 @@ OPERATORS = \
 	operators/verify_cc.cc \
 	operators/verify_cpf.cc \
 	operators/verify_ssn.cc \
+	operators/verify_svnr.cc \
 	operators/within.cc \
 	operators/unconditional_match.cc
 

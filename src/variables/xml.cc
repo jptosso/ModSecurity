@@ -44,7 +44,7 @@
 #include "src/actions/xmlns.h"
 
 namespace modsecurity {
-namespace Variables {
+namespace variables {
 
 #ifndef WITH_LIBXML2
 void XML::evaluate(Transaction *t,
@@ -125,7 +125,7 @@ void XML::evaluate(Transaction *t,
             xmlNodeGetContent(nodes->nodeTab[i]));
         if (content != NULL) {
             std::string *a = new std::string(content);
-            VariableValue *var = new VariableValue(m_fullName,
+            VariableValue *var = new VariableValue(m_fullName.get(),
                 a);
             if (!m_keyExclusion.toOmit(*m_fullName)) {
                 l->push_back(var);
@@ -140,5 +140,5 @@ void XML::evaluate(Transaction *t,
 
 #endif
 
-}  // namespace Variables
+}  // namespace variables
 }  // namespace modsecurity

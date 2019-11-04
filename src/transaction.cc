@@ -820,9 +820,7 @@ int Transaction::processRequestBody() {
     std::vector<const VariableValue *> l;
     m_variableRequestHeaders.resolve(&l);
     for (auto &a : l) {
-        std::string z(a->m_key, 16, a->m_key.length() - 16);
-        z = z + ": " + a->m_value;
-        fullRequest = fullRequest + z + "\n";
+        fullRequest = fullRequest + a->getKey() + ": " + a->getValue() + "\n";
         delete a;
     }
 
@@ -923,11 +921,16 @@ int Transaction::appendRequestBody(const unsigned char *buf, size_t len) {
                 Rules::BodyLimitAction::RejectBodyLimitAction) {
                 ms_dbg(5, "Request body limit is marked to reject the " \
                     "request");
-                intervention::free(&m_it);
-                m_it.log = strdup("Request body limit is marked to " \
-                        "reject the request");
-                m_it.status = 403;
-                m_it.disruptive = true;
+                if (getRuleEngineState() == Rules::EnabledRuleEngine) {
+                    intervention::free(&m_it);
+                    m_it.log = strdup("Request body limit is marked to " \
+                            "reject the request");
+                    m_it.status = 403;
+                    m_it.disruptive = true;
+                } else {
+                    ms_dbg(5, "Not rejecting the request as the engine is " \
+                        "not Enabled");
+                }
             }
             return true;
         }
@@ -1177,11 +1180,16 @@ int Transaction::appendResponseBody(const unsigned char *buf, size_t len) {
                 Rules::BodyLimitAction::RejectBodyLimitAction) {
                 ms_dbg(5, "Response body limit is marked to reject the " \
                     "request");
-                intervention::free(&m_it);
-                m_it.log = strdup("Response body limit is marked to reject " \
-                    "the request");
-                m_it.status = 403;
-                m_it.disruptive = true;
+                if (getRuleEngineState() == Rules::EnabledRuleEngine) {
+                    intervention::free(&m_it);
+                    m_it.log = strdup("Response body limit is marked to reject " \
+                        "the request");
+                    m_it.status = 403;
+                    m_it.disruptive = true;
+                } else {
+                    ms_dbg(5, "Not rejecting the request as the engine is " \
+                        "not Enabled");
+                }
             }
             return true;
         }
@@ -1359,7 +1367,7 @@ std::string Transaction::toOldAuditLogFormatIndex(const std::string &filename,
         << " ";
     ss << utils::string::dash_if_empty(this->m_clientIpAddress.c_str()) << " ";
     /** TODO: Check variable */
-    Variables::RemoteUser *r = new Variables::RemoteUser("REMOTE_USER");
+    variables::RemoteUser *r = new variables::RemoteUser("REMOTE_USER");
     std::vector<const VariableValue *> l;
     r->evaluate(this, NULL, &l);
     delete r;
@@ -1433,8 +1441,8 @@ std::string Transaction::toOldAuditLogFormat(int parts,
         m_variableRequestHeaders.resolve(&l);
         for (auto &h : l) {
             size_t pos = strlen("REQUEST_HEADERS:");
-            audit_log << h->m_key.c_str() + pos << ": ";
-            audit_log << h->m_value.c_str() << std::endl;
+            audit_log << h->getKeyWithCollection().c_str() + pos << ": ";
+            audit_log << h->getValue().c_str() << std::endl;
             delete h;
         }
         audit_log << std::endl;
@@ -1470,9 +1478,8 @@ std::string Transaction::toOldAuditLogFormat(int parts,
         audit_log << this->m_httpCodeReturned << std::endl;
         m_variableResponseHeaders.resolve(&l);
         for (auto &h : l) {
-            size_t pos = strlen("RESPONSE_HEADERS:");
-            audit_log << h->m_key.c_str() + pos << ": ";
-            audit_log << h->m_value.c_str() << std::endl;
+            audit_log << h->getKey().c_str() << ": ";
+            audit_log << h->getValue().c_str() << std::endl;
             delete h;
         }
     }
@@ -1570,8 +1577,7 @@ std::string Transaction::toJSON(int parts) {
 
         m_variableRequestHeaders.resolve(&l);
         for (auto &h : l) {
-            size_t pos = strlen("REQUEST_HEADERS:");
-            LOGFY_ADD(h->m_key.c_str() + pos, h->m_value.c_str());
+            LOGFY_ADD(h->getKey().c_str(), h->getValue().c_str());
             delete h;
         }
 
@@ -1587,7 +1593,7 @@ std::string Transaction::toJSON(int parts) {
         strlen("response"));
     yajl_gen_map_open(g);
 
-    if (parts & audit_log::AuditLog::GAuditLogPart) {
+    if (parts & audit_log::AuditLog::EAuditLogPart) {
         LOGFY_ADD("body", this->m_responseBody.str().c_str());
     }
     LOGFY_ADD_NUM("http_code", m_httpCodeReturned);
@@ -1601,8 +1607,7 @@ std::string Transaction::toJSON(int parts) {
 
         m_variableResponseHeaders.resolve(&l);
         for (auto &h : l) {
-            size_t pos = strlen("RESPONSE_HEADERS:");
-            LOGFY_ADD(h->m_key.c_str() + pos, h->m_value.c_str());
+            LOGFY_ADD(h->getKey().c_str(), h->getValue().c_str());
             delete h;
         }
 

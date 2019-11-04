@@ -24,17 +24,17 @@
 #include "modsecurity/transaction.h"
 
 namespace modsecurity {
-namespace Variables {
+namespace variables {
 
 void HighestSeverity::evaluate(Transaction *transaction,
     Rule *rule,
     std::vector<const VariableValue *> *l) {
     transaction->m_variableHighestSeverityAction.assign(
         std::to_string(transaction->m_highestSeverityAction));
-    l->push_back(new VariableValue(m_fullName,
+    l->push_back(new VariableValue(m_fullName.get(),
        &transaction->m_variableHighestSeverityAction));
 }
 
 
-}  // namespace Variables
+}  // namespace variables
 }  // namespace modsecurity
